@@ -1,3 +1,9 @@
+npm start para iniciar normal
+npm run build:ssr para construir ssr
+npm run serve:ssr para servir lo ssrmente construido
+
+usando dinamyc ssr para servir datos correctos
+
 # AngularGraphqlJest
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.3.
