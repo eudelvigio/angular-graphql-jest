@@ -26,6 +26,7 @@ export class Api {
     }
 
     start() {
+        this.graphqlTs = graphqlTs;
         this.BROWSER_FOLDER = join(process.cwd(), 'dist/browser');
         this.SERVER_FOLDER = join(process.cwd(), 'dist/server');
         this.app = express();
