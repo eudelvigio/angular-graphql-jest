@@ -2,7 +2,11 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "outDir": "../out-tsc/app-server",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "module": "commonjs",
+    "target": "es6",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "angularCompilerOptions": {
     "entryModule": "app/app.server.module#AppServerModule"
