@@ -68,7 +68,7 @@ export class Api {
         // Faster server renders w/ Prod mode (dev mode never needed)
         enableProdMode();
         // * NOTE :: leave this as require() since this file is built Dynamically from webpack
-        const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require(`${this.SERVER_FOLDER}/main`);
+        const {AppServerModuleNgFactory, LAZY_MODULE_MAP} = require('../../dist/server/main');
         // Our Universal express-engine (found @ https://github.com/angular/universal/tree/master/modules/express-engine)
         this.app.engine('html', ngExpressEngine({
           bootstrap: AppServerModuleNgFactory,
