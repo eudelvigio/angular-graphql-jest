@@ -91,14 +91,18 @@ export class Api {
         });
         const readFileSync = require('fs').readFileSync;
 
-        this.app.get('/mockeo', (req, res) => {
+        this.app.get('/mockeo', async (req, res) => {
+            console.log('endpoint mockeo llamado');
             const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
             const obj = JSON.parse(data);
+            await new Promise(resolve => setTimeout(resolve, 3000));
             res.send(obj);
         });
-        this.app.get('/mockeoespecifico', (req, res) => {
+        this.app.get('/mockeoespecifico', async (req, res) => {
+            console.log('endpoint mockeoespecifico llamado');
             const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
             const obj = JSON.parse(data);
+            await new Promise(resolve => setTimeout(resolve, 3000));
             res.send(obj.find((o) => parseInt(o.id, 10) === parseInt(req.query.id, 10)));
         });
         // Server static files from /browser
