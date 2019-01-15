@@ -6,16 +6,19 @@ export class HumanWithCarResolver {
   constructor(private service: HumanWithCarService) {}
 
   @Query(returns => HumanWithCarModel)
-  async recipe(@Arg('id') id: string) {
-    const hwc = await this.service.findById(id);
+  async humanWithCar(@Arg('id') id: number): Promise<HumanWithCarModel> {
+    console.log('Resolver humanWithCar ' + id);
+    const hwc: HumanWithCarModel = await this.service.findById(id);
     if (hwc === undefined) {
-      throw new Error(id);
+      throw new Error(id.toString());
     }
     return hwc;
   }
 
   @Query(returns => [HumanWithCarModel])
-  recipes() {
-    return this.service.findAll();
+  async humansWithCars(): Promise<HumanWithCarModel[]> {
+    console.log('Resolver humansWithCars');
+    const list: HumanWithCarModel[] = await this.service.findAll();
+    return list;
   }
 }

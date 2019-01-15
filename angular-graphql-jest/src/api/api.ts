@@ -6,8 +6,11 @@ import {provideModuleMap} from '@nguniversal/module-map-ngfactory-loader';
 
 import * as express from 'express';
 import * as process from 'process';
-import { buildSchema } from 'type-graphql';
+import { buildSchema, useContainer } from 'type-graphql';
 import { HumanWithCarResolver } from '../models/human-with-car/HumanWithCar.resolver';
+import { Container } from 'typedi';
+
+const { ApolloServer } = require('apollo-server-express');
 
 declare function require(name: string);
 
@@ -49,10 +52,13 @@ export class Api {
     }
 
     async setGraphQL() {
+        useContainer(Container);
+
         const schema = await buildSchema({
             resolvers: [HumanWithCarResolver]
         });
-        console.log(schema);
+        const server = new ApolloServer({schema});
+        server.applyMiddleware({app: this.app});
     }
 
     setSecurity() {
@@ -83,7 +89,18 @@ export class Api {
                 res.send(result);
             });
         });
+        const readFileSync = require('fs').readFileSync;
 
+        this.app.get('/mockeo', (req, res) => {
+            const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
+            const obj = JSON.parse(data);
+            res.send(obj);
+        });
+        this.app.get('/mockeoespecifico', (req, res) => {
+            const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
+            const obj = JSON.parse(data);
+            res.send(obj.find((o) => parseInt(o.id, 10) === parseInt(req.query.id, 10)));
+        });
         // Server static files from /browser
         this.app.get('*.*', express.static(this.BROWSER_FOLDER, {
             maxAge: '1y'

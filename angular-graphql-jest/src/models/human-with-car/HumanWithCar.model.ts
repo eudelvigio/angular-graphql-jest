@@ -2,17 +2,29 @@ import { ObjectType, Field, ID } from 'type-graphql';
 @ObjectType()
 export class HumanWithCarModel {
   @Field(type => ID)
-  id: string;
+  id: number;
 
   @Field()
-  title: string;
-
-  @Field({ nullable: true })
-  description?: string;
+  first_name: string;
 
   @Field()
-  creationDate: Date;
+  last_name: string;
 
-  @Field(type => [String])
-  ingredients: string[];
+  @Field()
+  email: string;
+
+  @Field()
+  gender: string;
+
+  @Field()
+  ip_address: string;
+
+  @Field()
+  app_name: string;
+
+  @Field()
+  caryear: number;
+
+  @Field()
+  carmodel: string;
 }
