@@ -1,5 +1,5 @@
 import { Resolver, Query, Arg, Args } from 'type-graphql';
-import {HumanWithCarModel} from './HumanWithCar.model';
+import {HumanWithCarModel} from '../../models/human-with-car/HumanWithCar.model';
 import { HumanWithCarService } from './HumanWithCar.service';
 @Resolver(HumanWithCarModel)
 export class HumanWithCarResolver {

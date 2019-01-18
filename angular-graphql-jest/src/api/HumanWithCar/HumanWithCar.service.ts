@@ -1,6 +1,6 @@
 const cachios = require('cachios');
 import { Service } from 'typedi';
-import { HumanWithCarModel } from './HumanWithCar.model';
+import { HumanWithCarModel } from '../../models/human-with-car/HumanWithCar.model';
 @Service()
 export class HumanWithCarService {
     findAll(): Promise<HumanWithCarModel[]> {
