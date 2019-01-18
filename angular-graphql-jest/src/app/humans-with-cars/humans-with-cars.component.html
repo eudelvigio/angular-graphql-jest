@@ -1,0 +1,18 @@
+<p>
+  humans-with-cars works!
+</p>
+<div *ngIf="loading">
+  Loading...
+</div>
+<div *ngIf="error">
+  Error :(
+</div>
+<div *ngIf="ids">
+  Humans With Cars
+  <select [(ngModel)]="selectedId" (ngModelChange)="select($event)">
+    <option *ngFor="let id of ids" id="{{id.id}}">{{id.id}}</option>
+  </select>
+  <div *ngIf="humanwithcar">
+    {{humanwithcar}}
+  </div>
+</div>
