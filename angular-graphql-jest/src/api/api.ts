@@ -7,7 +7,7 @@ import {provideModuleMap} from '@nguniversal/module-map-ngfactory-loader';
 import * as express from 'express';
 import * as process from 'process';
 import { buildSchema, useContainer } from 'type-graphql';
-import { HumanWithCarResolver } from '../models/human-with-car/HumanWithCar.resolver';
+import { HumanWithCarResolver } from './humanWithCar/HumanWithCar.resolver';
 import { Container } from 'typedi';
 
 const { ApolloServer } = require('apollo-server-express');
@@ -21,6 +21,7 @@ export class Api {
     BROWSER_FOLDER;
     SERVER_FOLDER;
     app;
+    apollo;
 
     graphqlTs;
     constructor(autoStart?: boolean) {
@@ -43,8 +44,13 @@ export class Api {
 
     listen() {
         const PORT = process.env.PORT || 4000;
-        this.app.listen(PORT, () => {
+        const http = require('http');
+        const httpServer = http.createServer(this.app);
+        this.apollo.installSubscriptionHandlers(httpServer);
+        httpServer.listen(PORT, () => {
             console.log(`Node server listening on http://localhost:${PORT}`);
+            console.log(`Node server listening on http://localhost:${PORT}${this.apollo.graphqlPath}`);
+            console.log(`Node server listening on http://localhost:${PORT}${this.apollo.subscriptionsPath}`);
         });
     }
 
@@ -57,8 +63,8 @@ export class Api {
         const schema = await buildSchema({
             resolvers: [HumanWithCarResolver]
         });
-        const server = new ApolloServer({schema});
-        server.applyMiddleware({app: this.app});
+        this.apollo = new ApolloServer({schema});
+        this.apollo.applyMiddleware({app: this.app});
     }
 
     setSecurity() {
@@ -90,20 +96,35 @@ export class Api {
             });
         });
         const readFileSync = require('fs').readFileSync;
+        const writeFileSync = require('fs').writeFileSync;
 
         this.app.get('/mockeo', async (req, res) => {
             console.log('endpoint mockeo llamado');
             const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
             const obj = JSON.parse(data);
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             res.send(obj);
         });
         this.app.get('/mockeoespecifico', async (req, res) => {
             console.log('endpoint mockeoespecifico llamado');
             const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
             const obj = JSON.parse(data);
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             res.send(obj.find((o) => parseInt(o.id, 10) === parseInt(req.query.id, 10)));
+        });
+        this.app.get('/incrementaAno', async (req, res) => {
+            console.log('endpoint mockeoespecifico llamado');
+            const data = readFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), 'utf8');
+            const list = JSON.parse(data);
+            list.map((o) => {
+                if (parseInt(o.id, 10) === parseInt(req.query.id, 10)) {
+                    if (o['caryear']) {
+                        o['caryear']++;
+                    }
+                }
+            });
+            writeFileSync(join(process.cwd(), 'src/mock/MOCK_DATA.json'), JSON.stringify(list), { encoding: 'utf8' });
+            res.send('acabao!');
         });
         // Server static files from /browser
         this.app.get('*.*', express.static(this.BROWSER_FOLDER, {

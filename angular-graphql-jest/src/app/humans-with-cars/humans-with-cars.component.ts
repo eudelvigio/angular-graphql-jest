@@ -13,6 +13,7 @@ export class HumansWithCarsComponent implements OnInit {
   ids: any;
   humanwithcar: any;
   selectedId;
+  MaxCarYear = 1990;
   constructor(private apollo: Apollo) { }
 
   ngOnInit() {
@@ -31,9 +32,33 @@ export class HumansWithCarsComponent implements OnInit {
         this.loading = result.loading;
         this.error = result.errors;
       });
+
+
+    const COMMENTS_SUBSCRIPTION = gql`
+    subscription maxCarYearSubscription {
+      maxCarYearSubscription
+    }`;
+
+    this.apollo.subscribe({query: COMMENTS_SUBSCRIPTION}).subscribe((res) => {
+      this.MaxCarYear = (res.data.maxCarYearSubscription);
+    });
+  }
+
+  increment() {
+    this.apollo.mutate({
+      mutation: gql`
+        mutation {
+          incrementYearOfCar(id:${this.selectedId}){
+              id
+              caryear
+            }
+        }
+      `
+    }).subscribe();
   }
 
   select(id) {
+    this.selectedId = id;
     this.apollo
       .watchQuery({
         query: gql`
@@ -49,6 +74,7 @@ export class HumansWithCarsComponent implements OnInit {
         `,
       })
       .valueChanges.subscribe(result => {
+        console.log('asdfasdfasdf');
         this.humanwithcar = JSON.stringify(result.data['humanWithCar']);
         this.loading = result.loading;
         this.error = result.errors;

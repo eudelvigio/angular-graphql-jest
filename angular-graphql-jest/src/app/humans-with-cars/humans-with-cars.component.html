@@ -1,6 +1,7 @@
 <p>
   humans-with-cars works!
 </p>
+<div>Most newer car bought in year {{MaxCarYear}}</div>
 <div *ngIf="loading">
   Loading...
 </div>
@@ -13,6 +14,7 @@
     <option *ngFor="let id of ids" id="{{id.id}}">{{id.id}}</option>
   </select>
   <div *ngIf="humanwithcar">
+    <button (click)=increment()>INCREMENTA AÑO</button>
     {{humanwithcar}}
   </div>
 </div>

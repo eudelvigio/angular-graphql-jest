@@ -1,14 +1,22 @@
-import { Resolver, Query, Arg, Args } from 'type-graphql';
+import { Resolver, Query, PubSub, Arg, Args, Mutation, Subscription, Root } from 'type-graphql';
 import {HumanWithCarModel} from '../../models/human-with-car/HumanWithCar.model';
 import { HumanWithCarService } from './HumanWithCar.service';
+import { PubSubEngine } from 'graphql-subscriptions';
+
 @Resolver(HumanWithCarModel)
 export class HumanWithCarResolver {
   constructor(private service: HumanWithCarService) {}
 
+  list: HumanWithCarModel[];
+
   @Query(returns => HumanWithCarModel)
-  async humanWithCar(@Arg('id') id: number): Promise<HumanWithCarModel> {
+  async humanWithCar( @PubSub() pubSub: PubSubEngine, @Arg('id') id: number): Promise<HumanWithCarModel> {
     console.log('Resolver humanWithCar ' + id);
-    const hwc: HumanWithCarModel = await this.service.findById(id);
+    if (!this.list) {
+      this.list = await this.service.findAll();
+    }
+    pubSub.publish('CARYEAR', this.list.map(o => o.caryear).reduce((acc, elem) => elem > acc ? acc = elem : acc = acc));
+    const hwc: HumanWithCarModel = this.list.find((o) => o.id === id);
     if (hwc === undefined) {
       throw new Error(id.toString());
     }
@@ -16,9 +24,25 @@ export class HumanWithCarResolver {
   }
 
   @Query(returns => [HumanWithCarModel])
-  async humansWithCars(): Promise<HumanWithCarModel[]> {
+  async humansWithCars( @PubSub() pubSub: PubSubEngine ): Promise<HumanWithCarModel[]> {
     console.log('Resolver humansWithCars');
-    const list: HumanWithCarModel[] = await this.service.findAll();
-    return list;
+    if (!this.list) {
+      this.list = await this.service.findAll();
+    }
+    pubSub.publish('CARYEAR', this.list.map(o => o.caryear).reduce((acc, elem) => elem > acc ? acc = elem : acc = acc));
+    return this.list;
+  }
+
+  @Mutation(returns => HumanWithCarModel)
+  async incrementYearOfCar( @PubSub() pubSub: PubSubEngine, @Arg('id') id: number): Promise<HumanWithCarModel> {
+    await this.service.incrementYearOfCar(id);
+    this.list.find((o) => o.id === id).caryear++;
+    pubSub.publish('CARYEAR', this.list.map(o => o.caryear).reduce((acc, elem) => elem > acc ? acc = elem : acc = acc));
+    return this.list.find((o) => o.id === id);
+  }
+
+  @Subscription({ topics: 'CARYEAR' })
+  maxCarYearSubscription(@Root() maxYear: Number): Number {
+    return maxYear;
   }
 }
