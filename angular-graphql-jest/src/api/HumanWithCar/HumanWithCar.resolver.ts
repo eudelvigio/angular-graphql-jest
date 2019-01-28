@@ -15,6 +15,7 @@ export class HumanWithCarResolver {
     if (!this.list) {
       this.list = await this.service.findAll();
     }
+    pubSub.publish('FEATUREDCARWITHHUMAN', this.list[Math.floor(Math.random() * this.list.length)]);
     pubSub.publish('CARYEAR', this.list.map(o => o.caryear).reduce((acc, elem) => elem > acc ? acc = elem : acc = acc));
     const hwc: HumanWithCarModel = this.list.find((o) => o.id === id);
     if (hwc === undefined) {
@@ -29,6 +30,7 @@ export class HumanWithCarResolver {
     if (!this.list) {
       this.list = await this.service.findAll();
     }
+    pubSub.publish('FEATUREDCARWITHHUMAN', this.list[Math.floor(Math.random() * this.list.length)]);
     pubSub.publish('CARYEAR', this.list.map(o => o.caryear).reduce((acc, elem) => elem > acc ? acc = elem : acc = acc));
     return this.list;
   }
@@ -38,11 +40,17 @@ export class HumanWithCarResolver {
     await this.service.incrementYearOfCar(id);
     this.list.find((o) => o.id === id).caryear++;
     pubSub.publish('CARYEAR', this.list.map(o => o.caryear).reduce((acc, elem) => elem > acc ? acc = elem : acc = acc));
+    pubSub.publish('FEATUREDCARWITHHUMAN', this.list[Math.floor(Math.random() * this.list.length)]);
     return this.list.find((o) => o.id === id);
   }
 
   @Subscription({ topics: 'CARYEAR' })
   maxCarYearSubscription(@Root() maxYear: Number): Number {
     return maxYear;
+  }
+
+  @Subscription(returns => HumanWithCarModel, { topics: 'FEATUREDCARWITHHUMAN' })
+  featuredManSubscription(@Root() humanWithCarModel: HumanWithCarModel): HumanWithCarModel {
+    return humanWithCarModel;
   }
 }

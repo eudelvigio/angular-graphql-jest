@@ -2,6 +2,12 @@
   humans-with-cars works!
 </p>
 <div>Most newer car bought in year {{MaxCarYear}}</div>
+<div>Featured HumanWithCar 
+  {{FeaturedHumanWithCar?.first_name}}
+  {{FeaturedHumanWithCar?.last_name}}
+  {{FeaturedHumanWithCar?.carmodel}}
+  {{FeaturedHumanWithCar?.caryear}}
+</div>
 <div *ngIf="loading">
   Loading...
 </div>

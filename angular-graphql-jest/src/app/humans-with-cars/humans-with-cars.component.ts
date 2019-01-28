@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
+import { HumanWithCarModel } from '../../models/human-with-car/HumanWithCar.model';
 
 @Component({
   selector: 'app-humans-with-cars',
@@ -14,6 +15,7 @@ export class HumansWithCarsComponent implements OnInit {
   humanwithcar: any;
   selectedId;
   MaxCarYear = 1990;
+  FeaturedHumanWithCar: HumanWithCarModel;
   constructor(private apollo: Apollo) { }
 
   ngOnInit() {
@@ -34,13 +36,28 @@ export class HumansWithCarsComponent implements OnInit {
       });
 
 
-    const COMMENTS_SUBSCRIPTION = gql`
+    const MAX_CAR_YEAR_SUBSCRIPTION = gql`
     subscription maxCarYearSubscription {
       maxCarYearSubscription
     }`;
 
-    this.apollo.subscribe({query: COMMENTS_SUBSCRIPTION}).subscribe((res) => {
+    this.apollo.subscribe({query: MAX_CAR_YEAR_SUBSCRIPTION}).subscribe((res) => {
       this.MaxCarYear = (res.data.maxCarYearSubscription);
+    });
+
+
+    const FEATURED_HUMAN_WITH_CAR = gql`
+    subscription featuredManSubscription {
+      featuredManSubscription {
+        first_name
+        last_name
+        carmodel
+        caryear
+      }
+    }`;
+
+    this.apollo.subscribe({query: FEATURED_HUMAN_WITH_CAR}).subscribe((res) => {
+      this.FeaturedHumanWithCar = (res.data.featuredManSubscription);
     });
   }
 
@@ -74,7 +91,6 @@ export class HumansWithCarsComponent implements OnInit {
         `,
       })
       .valueChanges.subscribe(result => {
-        console.log('asdfasdfasdf');
         this.humanwithcar = JSON.stringify(result.data['humanWithCar']);
         this.loading = result.loading;
         this.error = result.errors;
