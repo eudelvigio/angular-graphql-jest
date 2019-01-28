@@ -50,7 +50,7 @@ export class Api {
         httpServer.listen(PORT, () => {
             console.log(`Node server listening on http://localhost:${PORT}`);
             console.log(`Node server listening on http://localhost:${PORT}${this.apollo.graphqlPath}`);
-            console.log(`Node server listening on http://localhost:${PORT}${this.apollo.subscriptionsPath}`);
+            console.log(`Node server listening on ws://localhost:${PORT}${this.apollo.subscriptionsPath}`);
         });
     }
 
