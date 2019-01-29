@@ -47,7 +47,7 @@ export class Api {
         const http = require('http');
         const httpServer = http.createServer(this.app);
         this.apollo.installSubscriptionHandlers(httpServer);
-        httpServer.listen(PORT, () => {
+        httpServer.listen(PORT, '0.0.0.0', () => {
             console.log(`Node server listening on http://localhost:${PORT}`);
             console.log(`Node server listening on http://localhost:${PORT}${this.apollo.graphqlPath}`);
             console.log(`Node server listening on ws://localhost:${PORT}${this.apollo.subscriptionsPath}`);
